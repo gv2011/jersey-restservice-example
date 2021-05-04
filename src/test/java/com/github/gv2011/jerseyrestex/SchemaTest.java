@@ -3,7 +3,6 @@ package com.github.gv2011.jerseyrestex;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -84,15 +83,6 @@ class SchemaTest {
 		)
 		;
 	}
-
-	@Test
-	void printScwhema() throws Exception {
-		System.out.println(
-			LocalDateTime.parse("2021-05-02T15:55:06.001")
-		)
-		;
-	}
-
 
 	private static OpenAPI readApi() throws OpenApiConfigurationException {
 		return new OpenApiBuilder().buildApi();

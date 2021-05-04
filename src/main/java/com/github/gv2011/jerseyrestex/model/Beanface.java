@@ -2,15 +2,16 @@ package com.github.gv2011.jerseyrestex.model;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableSet;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public interface Beanface {
 	
 	@JsonProperty
-	
 	String someString();
 	
 	@JsonProperty
@@ -32,5 +33,13 @@ public interface Beanface {
 
 	@JsonProperty
 	Child child();
+	
+	@JsonProperty
+	Set<String> mutableSet();
+	
+	@JsonProperty
+	ImmutableSet<String> immutableSet();
+	
+	
 
 }

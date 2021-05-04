@@ -7,9 +7,13 @@ import javax.ws.rs.core.Application;
 import com.google.common.collect.ImmutableSet;
 
 public class JaxrsApplication extends Application{
+	
+	static {
+		
+	}
 
 	private static final Set<Class<?>> CLASSES = ImmutableSet.of(
-			JaxrsObjectMapper.class, RestApi.class
+		ObjectMapperFactory.class, RestApi.class
 	);
 
 	@Override

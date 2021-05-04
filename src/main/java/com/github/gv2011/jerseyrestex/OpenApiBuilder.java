@@ -2,7 +2,9 @@ package com.github.gv2011.jerseyrestex;
 
 import java.time.LocalDateTime;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.github.gv2011.jerseyrestex.model.Elementary;
@@ -13,6 +15,8 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.jackson.ModelResolver;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.oas.integration.GenericOpenApiContextBuilder;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
@@ -24,13 +28,27 @@ import io.swagger.v3.oas.models.media.ComposedSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 
-public class OpenApiBuilder {
+public final class OpenApiBuilder {
+	
+	private static final AtomicBoolean CONFIGURED;
 	
 	static {
-		ModelConverters converters = ModelConverters.getInstance();
-		ModelConverter jacksonConverter = converters.getConverters().get(0);
-		converters.removeConverter(jacksonConverter);
-		converters.addConverter(modelConverter(jacksonConverter));
+		CONFIGURED = new AtomicBoolean();
+		configureDefaultModelConverter();
+	}
+	
+	public static void configureDefaultModelConverter() {
+		if(!CONFIGURED.getAndSet(true)) {
+			ObjectMapperFactory.configureMapper(Json.mapper());
+			ModelConverters.getInstance().addConverter(new PatchedModelResolver(Json.mapper()));
+//			ModelConverters converters = ModelConverters.getInstance();
+//			List<ModelConverter> conv = converters.getConverters();
+//			assert conv.size()==1;
+//			ModelConverter jacksonConverter = conv.get(0);
+//			converters.removeConverter(jacksonConverter);
+//			assert converters.getConverters().isEmpty();
+//			converters.addConverter(new ModelResolver(ObjectMapperFactory.createObjectMapper()));
+		}
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

@@ -2,6 +2,7 @@ package com.github.gv2011.jerseyrestex;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,6 +13,7 @@ import com.github.gv2011.jerseyrestex.model.Beanface;
 import com.github.gv2011.jerseyrestex.model.Child;
 import com.github.gv2011.jerseyrestex.model.Colour;
 import com.github.gv2011.jerseyrestex.model.Elementary;
+import com.google.common.collect.ImmutableSet;
 
 @Path("/rest")
 @Produces(MediaType.APPLICATION_JSON)
@@ -78,6 +80,14 @@ public class RestApi {
 							return "red";
 						}
 					};
+				}
+				@Override
+				public Set<String> mutableSet() {
+					return ImmutableSet.of("a", "b");
+				}
+				@Override
+				public ImmutableSet<String> immutableSet() {
+					return ImmutableSet.of("c", "d");
 				}
 			}
         ;

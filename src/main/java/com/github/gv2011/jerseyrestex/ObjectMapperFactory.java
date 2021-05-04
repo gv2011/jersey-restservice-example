@@ -10,35 +10,45 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.introspect.BasicClassIntrospector;
+import com.fasterxml.jackson.databind.introspect.ClassIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 
 @Provider
-public class JaxrsObjectMapper implements ContextResolver<ObjectMapper> {
+public final class ObjectMapperFactory implements ContextResolver<ObjectMapper> {
 
 	private final ObjectMapper mapper;
 
-    public JaxrsObjectMapper() {
+    public ObjectMapperFactory() {
         this.mapper = createObjectMapper();
     }
 
     @Override
     public ObjectMapper getContext(Class<?> type) {
+    	assert type==ObjectMapper.class;
         return mapper;
     }
 
-    private ObjectMapper createObjectMapper() {
+    public static ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_ABSENT);
+        configureMapper(mapper);
+        return mapper;
+    }
+
+	public static void configureMapper(ObjectMapper mapper) {
+		mapper.setConfig(mapper.getSerializationConfig().with(new PatchedClassIntrospector()));
+		mapper.setSerializationInclusion(Include.NON_ABSENT);
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
 		mapper.registerModule(module);
         mapper.registerModule(new Jdk8Module());
-//		mapper.findAndRegisterModules();
-        return mapper;
-    }
+        mapper.registerModule(new GuavaModule());
+	}
     
     private static class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
 
